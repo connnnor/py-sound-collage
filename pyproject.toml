@@ -1,11 +1,16 @@
 [tool.poetry]
 name = "py-sound-collage"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Generate audio collage with random snippets local files"
+authors = ["Connor Kelleher <connor.r.kelleher@gmail.com>"]
+
+[tool.poetry.scripts]
+py-sound-collage = "py_sound_collage.cli:cli"
 
 [tool.poetry.dependencies]
-python = "^2.7"
+python = "^3.6"
+pydub = "*"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
