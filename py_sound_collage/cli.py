@@ -20,31 +20,26 @@ def cli(audio_dir, sample_len, output_len):
     """Generate audio collage with random snippets local files
 
     Concatenates random segments of length sample_len ms from mp3 files
-    located in audio_dir.
-    NOTE: If OUTPUT_LEN is not specified each input file will only
-    be sampled once. When OUTPUT_LEN is specified each input file
-    may be sampled from more than once or not at all
+    located in audio_dir. If OUTPUT_LEN is not specified the collage
+    output will be SAMPLE_LEN * (the number of input files)
+
+    NOTE: each input file may be sampled from more than once 
+    or not at all
 
     AUDIO_DIR is the directory to search for audio files
     """
     os.chdir(audio_dir)
-    all_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
-    random.shuffle(all_songs)
-    click.echo(f"Found {len(all_songs)} songs")
+    songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
+    click.echo(f"Found {len(songs)} songs")
 
-    weights = [len(x) for x in all_songs]
+    if not output_len: 
+      output_len = len(songs) * sample_len
+
+    weights = [len(x) for x in songs]
+
     collage = AudioSegment.silent(1)  # create output
-    while True:
-        # sample any song
-        if output_len:
-            song = random.choices(all_songs, weights=weights, k=1)[0]
-            if len(collage) > output_len:
-                break
-        # sample each song once
-        else:
-            if not all_songs:
-                break
-            song = all_songs.pop()
+    while len(collage) < output_len:
+        song = random.choices(songs, weights=weights, k=1)[0]
 
         start = random.randint(0, len(song) - sample_len)
         end = min(start + sample_len, len(song))
@@ -52,6 +47,5 @@ def cli(audio_dir, sample_len, output_len):
         collage = collage.append(clip, crossfade=0)
 
     # write output
-    collage_length = len(collage) / 1000  # msec to sec
-    click.echo(f"Collage length: {collage_length} sec")
+    click.echo(f"Collage length: {len(collage) / 1000} sec")
     collage.export("collage.mp3", format="mp3")
