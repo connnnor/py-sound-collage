@@ -18,7 +18,7 @@ import os
 @click.option(
     "--output_len",
     type=int,
-    help="Length in milliseconds of output collage. NOTE: Songs can repeat with this option")
+    help="Length in milliseconds of output collage.")
 def cli(audio_dir, sample_len, output_len):
     """Generate audio collage with random snippets local files
 
@@ -35,23 +35,29 @@ def cli(audio_dir, sample_len, output_len):
     random.shuffle(all_songs)
     click.echo(f"Found {len(all_songs)} songs")
     print(f"output_len = {output_len}")
+    total_len = sum(len(s) for s in all_songs)
 
     collage = AudioSegment.silent(1) 
     # generate output_len ms of audio
-    if output_len:
-      while len(collage) < output_len:
-        song = random.choice(all_songs)
-        start = random.randint(0, len(song) - sample_len)
-        end = min(start + sample_len, len(song))
-        clip = song[start : end]
-        collage = collage.append(clip, crossfade=0)
-    # sample each song once
-    else:
-      for song in all_songs:
-          start = random.randint(0, len(song) - sample_len)
-          end = min(start + sample_len, len(song))
-          clip = song[start : end]
-          collage = collage.append(clip, crossfade=0)
+
+    # weight probability by length
+    weights = list(map(lambda x: len(x), all_songs))
+    while True: 
+      # sample any song
+      if output_len:
+        song = random.choices(all_songs,weights=weights,k=1)[0]
+        if len(collage) > output_len:
+          break
+      # sample each song once
+      else:
+        if not all_songs:
+          break
+        song = all_songs.pop()
+
+      start = random.randint(0, len(song) - sample_len)
+      end = min(start + sample_len, len(song))
+      clip = song[start : end]
+      collage = collage.append(clip, crossfade=0)
 
     # write output
     collage_length = len(collage) / 1000 # ms
