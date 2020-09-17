@@ -1,8 +1,8 @@
 from glob import glob
-from pydub import AudioSegment
-import click
 import random
 import os
+from pydub import AudioSegment
+import click
 
 
 @click.command()
@@ -14,7 +14,7 @@ import os
     "--sample_len", type=int, default=1000, help="Length in milliseconds of each sample"
 )
 @click.option(
-    "--output_len", type=int, help="Length in milliseconds of output collage."
+    "--output_len", type=int, help="Length in milliseconds of output collage"
 )
 def cli(audio_dir, sample_len, output_len):
     """Generate audio collage with random snippets local files
@@ -31,9 +31,8 @@ def cli(audio_dir, sample_len, output_len):
     all_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
     random.shuffle(all_songs)
     click.echo(f"Found {len(all_songs)} songs")
-    total_len = sum(len(s) for s in all_songs)
 
-    weights = list(map(lambda x: len(x), all_songs))  # weight by length
+    weights = [len(x) for x in all_songs]
     collage = AudioSegment.silent(1)  # create output
     while True:
         # sample any song
@@ -53,6 +52,6 @@ def cli(audio_dir, sample_len, output_len):
         collage = collage.append(clip, crossfade=0)
 
     # write output
-    collage_length = len(collage) / 1000  # ms
+    collage_length = len(collage) / 1000  # msec to sec
     click.echo(f"Collage length: {collage_length} sec")
     collage.export("collage.mp3", format="mp3")
