@@ -13,9 +13,7 @@ import click
 @click.option(
     "--sample_len", type=int, default=1000, help="Length in milliseconds of each sample"
 )
-@click.option(
-    "--output_len", type=int, help="Length in milliseconds of output collage"
-)
+@click.option("--output_len", type=int, help="Length in milliseconds of output collage")
 def cli(audio_dir, sample_len, output_len):
     """Generate audio collage with random snippets local files
 
@@ -23,7 +21,7 @@ def cli(audio_dir, sample_len, output_len):
     located in audio_dir. If OUTPUT_LEN is not specified the collage
     output will be SAMPLE_LEN * (the number of input files)
 
-    NOTE: each input file may be sampled from more than once 
+    NOTE: each input file may be sampled from more than once
     or not at all
 
     AUDIO_DIR is the directory to search for audio files
@@ -32,8 +30,8 @@ def cli(audio_dir, sample_len, output_len):
     songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
     click.echo(f"Found {len(songs)} songs")
 
-    if not output_len: 
-      output_len = len(songs) * sample_len
+    if not output_len:
+        output_len = len(songs) * sample_len
 
     weights = [len(x) for x in songs]
 
