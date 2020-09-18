@@ -6,7 +6,7 @@
 ## Usage
 
 ```
-> poetry run py-sound-collage --help
+> py-sound-collage --help
 Usage: py-sound-collage [OPTIONS] AUDIO_DIR
 
   Generate audio collage with random snippets local files
@@ -34,7 +34,7 @@ ls nature
 1017amsterdam.mp3         hummingbirds.mp3          palermo-traffic.MP3
 church-bells-salzburg.mp3 lagos.mp3                 pulse-emitter.mp3
 gronant-beach.mp3         morning-birds.mp3         wastepaper.mp3
-> poetry run py-sound-collage --sample_len 500 nature/  --output_len 20000
+> py-sound-collage --sample_len 500 nature/  --output_len 20000
 Found 8 songs
 Collage length: 20.0 sec
 ```
